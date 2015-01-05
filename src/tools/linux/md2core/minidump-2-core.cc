@@ -99,9 +99,13 @@ typedef MDTypeHelper<sizeof(ElfW(Addr))>::MDRawLinkMap MDRawLinkMap;
 static const MDRVA kInvalidMDRVA = static_cast<MDRVA>(-1);
 static bool verbose;
 static string g_custom_so_basedir;
+static bool g_mangle_sonames = true;
 
 static int usage(const char* argv0) {
-  fprintf(stderr, "Usage: %s [-v] <minidump file>\n", argv0);
+  fprintf(stderr, "Usage: %s [options] <minidump file>\n", argv0);
+  fprintf(stderr,
+"  --mangle-sonames=<0|1>: Should module names be manged by adding GUID &\n"
+"                          stripping base dir. (default: 1)\n");
   return 1;
 }
 
@@ -878,17 +882,21 @@ ParseModuleStream(CrashedProcess* crashinfo, const MinidumpMemoryRange& range,
             record->signature.data4[6], record->signature.data4[7]);
     string filename =
         full_file.GetAsciiMDString(rawmodule->module_name_rva);
-    size_t slash = filename.find_last_of('/');
-    string basename = slash == string::npos ?
-        filename : filename.substr(slash + 1);
-    if (strcmp(guid, "00000000-0000-0000-0000-000000000000")) {
-      string prefix;
-      if (!g_custom_so_basedir.empty())
-        prefix = g_custom_so_basedir;
-      else
-        prefix = string("/var/lib/breakpad/") + guid + "-" + basename;
+    if (g_mangle_sonames) {
+      size_t slash = filename.find_last_of('/');
+      string basename = slash == string::npos ?
+          filename : filename.substr(slash + 1);
+      if (strcmp(guid, "00000000-0000-0000-0000-000000000000")) {
+        string prefix;
+        if (!g_custom_so_basedir.empty())
+          prefix = g_custom_so_basedir;
+        else
+          prefix = string("/var/lib/breakpad/") + guid + "-" + basename;
 
-      crashinfo->signatures[rawmodule->base_of_image] = prefix + basename;
+        crashinfo->signatures[rawmodule->base_of_image] = prefix + basename;
+      }
+    } else {
+        crashinfo->signatures[rawmodule->base_of_image] = filename;
     }
 
     if (verbose) {
@@ -1055,6 +1063,15 @@ main(int argc, char** argv) {
       }
 
       g_custom_so_basedir = argv[argi];
+    } else if (strncmp(argv[argi], "--mangle-sonames",
+		       strlen("--mangle-sonames")) == 0) {
+      char* equals_pos = strchr(argv[argi], '=');
+      if (equals_pos == NULL) {
+        fprintf(stderr, "--mangle-sonames expects an argument (0/1).");
+        return usage(argv[0]);
+      }
+
+      g_mangle_sonames = *(equals_pos+1) == '1';
     } else {
       return usage(argv[0]);
     }
