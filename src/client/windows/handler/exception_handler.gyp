@@ -34,6 +34,8 @@
     {
       'target_name': 'exception_handler',
       'type': 'static_library',
+      # MB-20034: don't use TerminateThread
+      'defines' : ['BREAKPAD_NO_TERMINATE_THREAD'],
       'sources': [
         "exception_handler.cc",
         "exception_handler.h",
