@@ -325,7 +325,9 @@
           # This is required for ATL to use XP-safe versions of its functions.
           '_USING_V110_SDK71_',
         ],
-        'msvs_disabled_warnings': [4800],
+        # Added C4091 ('keyword' : ignored on left of 'type' when
+        # no variable is declared) seen when including: Windows Kits\8.1\Include\um\dbghelp.h
+        'msvs_disabled_warnings': [4091, 4800],
         'msvs_settings': {
           'VCCLCompilerTool': {
             'WarnAsError': 'true',
