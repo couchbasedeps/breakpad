@@ -332,7 +332,10 @@
         # which occurs when building for x64.
         # Added 4366 ("The result of the unary '&' operator may be unaligned")
         # which occurs in processor\minidump.cc
-        'msvs_disabled_warnings': [4091, 4267, 4366, 4800],
+        #
+        # Added 4334 ("'<<': result of 32-bit shift implicitly converted to 64 bits (was 64-bit shift intended?")
+        # which occurs in processor\minidump.cc
+        'msvs_disabled_warnings': [4091, 4267, 4334, 4366, 4800],
         'msvs_settings': {
           'VCCLCompilerTool': {
             'WarnAsError': 'true',
