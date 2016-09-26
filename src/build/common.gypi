@@ -330,7 +330,9 @@
         #
         # Added 4267 ("conversion from 'size_t' to 'uint32_t', possible loss of data")
         # which occurs when building for x64.
-        'msvs_disabled_warnings': [4091, 4267, 4800],
+        # Added 4366 ("The result of the unary '&' operator may be unaligned")
+        # which occurs in processor\minidump.cc
+        'msvs_disabled_warnings': [4091, 4267, 4366, 4800],
         'msvs_settings': {
           'VCCLCompilerTool': {
             'WarnAsError': 'true',
