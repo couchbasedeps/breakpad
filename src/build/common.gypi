@@ -335,7 +335,10 @@
         #
         # Added 4334 ("'<<': result of 32-bit shift implicitly converted to 64 bits (was 64-bit shift intended?")
         # which occurs in processor\minidump.cc
-        'msvs_disabled_warnings': [4091, 4267, 4334, 4366, 4800],
+        #
+        # Added C4312 ('reinterpret_cast': conversion from 'unsigned int' to 'void *' of greater size)
+        # which occurs in minidump_test.cc
+        'msvs_disabled_warnings': [4091, 4267, 4312, 4334, 4366, 4800],
         'msvs_settings': {
           'VCCLCompilerTool': {
             'WarnAsError': 'true',
